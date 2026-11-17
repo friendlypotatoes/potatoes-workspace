@@ -1,0 +1,262 @@
+[
+  {
+    "id": "tpl.done_gate",
+    "version": "2026-11-17T00:00:00.000Z",
+    "concept_path": "templates/done-gate.md",
+    "title": "When is a task done?",
+    "question_patterns": [
+      "when is {task} done",
+      "is this done",
+      "what is the done gate",
+      "how do i verify this"
+    ],
+    "params_schema": {
+      "parameters": [
+        {
+          "name": "task",
+          "type": "string",
+          "required": false,
+          "resolve": "none",
+          "description": "The task being closed, as the asker named it."
+        }
+      ]
+    },
+    "context": [],
+    "computation": "# line 1 — the proof, must fail when the feature is broken\nnode scripts/okf.mjs --check\n\n# line 2 — no regression\nbash scripts/check-skills.sh\n\n# line 3 — written in the PR body, not a command\n# not run: <what and why>",
+    "reads": [
+      "done-gate"
+    ],
+    "classes_touched": [],
+    "answer_spec": {
+      "shape": "table",
+      "headline": {
+        "value": "count",
+        "unit": "lines",
+        "label": "Done gate for {task}"
+      },
+      "columns": [
+        {
+          "key": "line",
+          "label": "Line",
+          "kind": "text"
+        },
+        {
+          "key": "content",
+          "label": "Content",
+          "kind": "text"
+        }
+      ],
+      "row_id": "id",
+      "sub": "The first line must fail when the feature is broken. An auditor re-runs the commands; an agent never verifies its own work."
+    },
+    "followups": [
+      {
+        "template": "tpl.release",
+        "params": {},
+        "text": "How do I cut a release after this?"
+      }
+    ],
+    "verified": true,
+    "stale_after": "2027-02-12T00:00:00.000Z",
+    "resolvable": true,
+    "unresolvable_reason": null,
+    "concept_sha256": "d24740c1f0e22ebd6dad6513fba9051beee329ee198d4dce8e6520c39c1318aa"
+  },
+  {
+    "id": "tpl.evening_loop",
+    "version": "2026-11-17T00:00:00.000Z",
+    "concept_path": "templates/evening-loop.md",
+    "title": "How do I end the day?",
+    "question_patterns": [
+      "how do i end the day",
+      "what is the evening loop",
+      "what do i queue for tonight",
+      "how do i hand off"
+    ],
+    "params_schema": {
+      "parameters": []
+    },
+    "context": [
+      "as_of"
+    ],
+    "computation": "# 1. the state file, rewritten every session\ncat > STATE.md <<'EOF'\n## Where we are\n## Last 3 decisions\n## Open work\n## Do not do\nEOF\n\n# 2. queue 1-3 contractor cards, each with its own done-gate command,\n#    then let the overnight agent work them on an integration branch\n\n# 3. stop. the morning reviews the diffs.",
+    "reads": [
+      "evening-loop"
+    ],
+    "classes_touched": [],
+    "answer_spec": {
+      "shape": "table",
+      "headline": {
+        "value": "count",
+        "unit": "tasks",
+        "label": "Overnight queue"
+      },
+      "columns": [
+        {
+          "key": "task",
+          "label": "Task",
+          "kind": "text"
+        },
+        {
+          "key": "finish_line",
+          "label": "Finish line",
+          "kind": "text"
+        }
+      ],
+      "row_id": "id",
+      "sub": "One paragraph per task, its own context, a one-line finish line, a done-gate. Nothing merges without a human reading the diff."
+    },
+    "followups": [
+      {
+        "template": "tpl.morning_loop",
+        "params": {},
+        "text": "How do I start the day after this?"
+      },
+      {
+        "template": "tpl.done_gate",
+        "params": {},
+        "text": "What counts as done for each queued task?"
+      }
+    ],
+    "verified": true,
+    "stale_after": "2027-02-12T00:00:00.000Z",
+    "resolvable": true,
+    "unresolvable_reason": null,
+    "concept_sha256": "3458718055f7ad88bbe9dbd651b5ec638cd03bd64d6012ca048906fd3c444234"
+  },
+  {
+    "id": "tpl.morning_loop",
+    "version": "2026-11-17T00:00:00.000Z",
+    "concept_path": "templates/morning-loop.md",
+    "title": "How do I start the day?",
+    "question_patterns": [
+      "how do i start the day",
+      "what is the morning loop",
+      "what should i work on first",
+      "what is left behind"
+    ],
+    "params_schema": {
+      "parameters": []
+    },
+    "context": [
+      "as_of"
+    ],
+    "computation": "# the delta, not the corpus\ngit log --oneline --since=yesterday\ngh pr list\ngh pr checks\n\n# the state probe: branch, last 3 decisions, top open task\ncat STATE.md",
+    "reads": [
+      "morning-loop"
+    ],
+    "classes_touched": [],
+    "answer_spec": {
+      "shape": "table",
+      "headline": {
+        "value": "count",
+        "unit": "steps",
+        "label": "Morning loop"
+      },
+      "columns": [
+        {
+          "key": "step",
+          "label": "Step",
+          "kind": "text"
+        },
+        {
+          "key": "minutes",
+          "label": "Minutes",
+          "kind": "int"
+        }
+      ],
+      "row_id": "id",
+      "sub": "Load state, not history. A rejected plan is the cheapest failure: the agent proposes the day in 5 lines, the human trims."
+    },
+    "followups": [
+      {
+        "template": "tpl.evening_loop",
+        "params": {},
+        "text": "How do I end the day?"
+      }
+    ],
+    "verified": true,
+    "stale_after": "2027-02-12T00:00:00.000Z",
+    "resolvable": true,
+    "unresolvable_reason": null,
+    "concept_sha256": "102bd68c076538e7057e3081fb37e2bf812903ef269ea0e44f6dceb7e52a4eb7"
+  },
+  {
+    "id": "tpl.release",
+    "version": "2026-11-17T00:00:00.000Z",
+    "concept_path": "templates/release.md",
+    "title": "How do I cut a release?",
+    "question_patterns": [
+      "how do i cut a release",
+      "release {version}",
+      "deploy {target}",
+      "publish {target} {version}",
+      "how do i release"
+    ],
+    "params_schema": {
+      "parameters": [
+        {
+          "name": "version",
+          "type": "string",
+          "required": true,
+          "resolve": "none",
+          "description": "The version to release, as the asker wrote it (e.g. 1.2.0)."
+        },
+        {
+          "name": "target",
+          "type": "string",
+          "required": false,
+          "resolve": "none",
+          "description": "What is released: an app, a package, or the version itself. Copy the asker's words."
+        }
+      ]
+    },
+    "context": [
+      "as_of"
+    ],
+    "computation": "# 1. the done gate, local\nnpm ci\nnpm run check\n\n# 2. the version tag\ngit tag v:version\ngit push origin v:version\n\n# 3. the Release workflow publishes; verify its run is green\ngh run list --workflow=release.yml --limit 1",
+    "reads": [
+      "release"
+    ],
+    "classes_touched": [],
+    "answer_spec": {
+      "shape": "table",
+      "headline": {
+        "value": "count",
+        "unit": "steps",
+        "label": "Release {version}"
+      },
+      "columns": [
+        {
+          "key": "step",
+          "label": "Step",
+          "kind": "text"
+        },
+        {
+          "key": "proof",
+          "label": "Proof",
+          "kind": "mono"
+        }
+      ],
+      "row_id": "id",
+      "sub": "Checks first, then the tag. The Release workflow does the publishing; the release is done when its run is green."
+    },
+    "followups": [
+      {
+        "template": "tpl.done_gate",
+        "params": {},
+        "text": "What counts as done for the checks?"
+      },
+      {
+        "template": "tpl.morning_loop",
+        "params": {},
+        "text": "How do I start the day after the release?"
+      }
+    ],
+    "verified": true,
+    "stale_after": "2027-02-12T00:00:00.000Z",
+    "resolvable": true,
+    "unresolvable_reason": null,
+    "concept_sha256": "cf6bc0563b3d4e3c87d6432a120e239bc0f85661f27c42703f394e7ea959c061"
+  }
+]

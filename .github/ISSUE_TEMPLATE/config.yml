@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or "how do I...?"
+    url: https://github.com/friendlypotatoes/potatoes-workspace/discussions
+    about: Ask in Discussions. Issues are for bugs and changes to existing skills only.
+  - name: New skill idea
+    url: https://github.com/friendlypotatoes/potatoes-workspace/discussions
+    about: Post it in Discussions. New skills do not start as issues.
+  - name: Is my request in scope?
+    url: https://github.com/friendlypotatoes/potatoes-workspace/blob/main/docs/FINDINGS.md
+    about: The findings this repo is built on, and the requests it has already decided not to take.

@@ -1,0 +1,59 @@
+name: Release
+
+# The release workflow comes first (docs/FINDINGS.md): everything versioned goes out
+# through here — an app, a package, or the repo's own version. The done gate runs
+# before anything publishes: no release without the proof commands passing.
+#
+# How to release (docs/workflows/release.md):
+#   git tag v<version> && git push origin v<version>
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions: {}
+
+concurrency: release-${{ github.ref }}
+
+jobs:
+  verify:
+    name: Done gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The proof: must fail when a template is broken or the generated file is stale.
+      - name: OKF templates compile and generated file is fresh
+        run: node scripts/okf.mjs --check
+
+      - name: Skill library is structurally sound
+        run: bash scripts/check-skills.sh
+
+  release:
+    name: Publish
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
+
+      # Extension points for the other release kinds (docs/workflows/release.md):
+      # - app deploy:   add a `deploy` job with the target's CLI, gated on `needs: verify`
+      # - npm package:  add a job with `npm publish --provenance`, gated on `needs: verify`

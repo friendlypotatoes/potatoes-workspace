@@ -1,0 +1,15 @@
+{
+  "name": "potatoes-workspace",
+  "private": true,
+  "type": "module",
+  "description": "Personal agent workspace: skills, workflow docs grounded in the Findings Workflows Best Practice conversation, and the OKF template compiler.",
+  "scripts": {
+    "okf": "node scripts/okf.mjs",
+    "okf:check": "node scripts/okf.mjs --check",
+    "check:skills": "bash scripts/check-skills.sh",
+    "check": "npm run okf:check && npm run check:skills"
+  },
+  "dependencies": {
+    "yaml": "^2.9.1"
+  }
+}
