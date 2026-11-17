@@ -14,6 +14,8 @@ back to it.
 | `docs/workflows/` | The daily loops: [release](docs/workflows/release.md), [morning](docs/workflows/morning-loop.md), [evening](docs/workflows/evening-loop.md). |
 | `knowledge/` | OKF v0.2 bundle: the workflows as attested templates, compiled by `scripts/okf.mjs`. |
 | `scripts/` | `okf.mjs` (the OKF template compiler) and `check-skills.sh` (the skill library check). |
+| `.agents/` | Shared agent material: the append-only decision log (`adr/`) and the conventions any harness reads. |
+| `CLAUDE.md` | The rules for agents ([AGENTS.md](AGENTS.md) symlinks it — one source). |
 | `.github/` | Issue templates (bug, config, idea) and the Release workflow — the workflows start with the release. |
 
 ## The OKF templates

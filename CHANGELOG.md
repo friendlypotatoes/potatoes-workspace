@@ -7,3 +7,5 @@ Releases use generated notes from the git tag; this file keeps the human summary
 - Initial contents: the skill library, docs/FINDINGS.md (the solid ground from the Findings Workflows
   Best Practice conversation), the workflow docs, the OKF v0.2 bundle and compiler, the issue
   templates (bug, config, idea), and the Release workflow.
+- `.agents/` with the append-only decision log (adr/0001-0003); `AGENTS.md` now symlinks `CLAUDE.md`
+  so the rules have one source.
